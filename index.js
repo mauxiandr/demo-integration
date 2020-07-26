@@ -10,7 +10,7 @@ const report = async () => {
 	let events = []; //almacena los eventos que serán guardados en el reporte
 	let totalEvents = 0; //para capturar eventos totales en el reporte
 	let cursor = '0:0:1'; // para saber si hay mas eventos por consultar
-	const date = moment('2020-07-03').unix(); //fecha despues de la ultima facturacion
+	const date = moment('2020-07-26').unix(); //fecha despues de la ultima facturacion
 	let filePath = `./listadoDTEs.csv`;
 
 	let logger = fs.createWriteStream(filePath, {
@@ -39,7 +39,8 @@ const report = async () => {
 					let evento = await sentry.getEventData(idEvent);
 					// se revisan los tags del evento y si corresponde se añade al reporte
 					if (filterEvent(evento.tags)) {
-						events.push({ idEvent, fechaEvento });
+						console.log('idDTE', evento.context.idDTE);
+						events.push({ idDTE: evento.context.idDTE, fechaEvento });
 						totalEvents++;
 					}
 				}
@@ -47,7 +48,7 @@ const report = async () => {
 		} while (cursor != false); //mientras haya más resultados
 
 		events.forEach((evento) => {
-			logger.write(`${evento.idEvent},${moment.unix(evento.fechaEvento).format('DD/MM/YYYY')}\n`);
+			logger.write(`${evento.idDTE},${moment.unix(evento.fechaEvento).format('DD/MM/YYYY')}\n`);
 		});
 		return `Se ha finalizado exitosamente la generación del reporte de eventos del Issue con un total de ${totalEvents}`;
 	} catch (error) {

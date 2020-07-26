@@ -11,6 +11,7 @@
     * PROJECT_SLUG 
     * STAGE_TAG
     * STAGE
+    * REGION
 - Run command
     * node report
     Esto generará un reporte listaDTEs.csv en la raíz del proyecto
