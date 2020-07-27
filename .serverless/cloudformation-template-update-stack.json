@@ -99,7 +99,7 @@
                     "s3:*"
                   ],
                   "Resource": [
-                    "arn:aws:s3:::${file(./config/config.test260720/*"
+                    "arn:aws:s3:::test260720/*"
                   ]
                 }
               ]
@@ -129,7 +129,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/demo-integration/craft/1595821631340-2020-07-27T03:47:11.340Z/demo-integration.zip"
+          "S3Key": "serverless/demo-integration/craft/1595821864892-2020-07-27T03:51:04.892Z/demo-integration.zip"
         },
         "FunctionName": "demo-integration-craft-report",
         "Handler": "index.report",
@@ -180,7 +180,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/demo-integration/craft/1595821631340-2020-07-27T03:47:11.340Z/demo-integration.zip"
+          "S3Key": "serverless/demo-integration/craft/1595821864892-2020-07-27T03:51:04.892Z/demo-integration.zip"
         },
         "FunctionName": "demo-integration-craft-download",
         "Handler": "download.download",
@@ -339,7 +339,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1595821607006": {
+    "ApiGatewayDeployment1595821844664": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
