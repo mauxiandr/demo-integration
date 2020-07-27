@@ -120,7 +120,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/demo-integration/craft/1595819821466-2020-07-27T03:17:01.466Z/demo-integration.zip"
+          "S3Key": "serverless/demo-integration/craft/1595820146431-2020-07-27T03:22:26.431Z/demo-integration.zip"
         },
         "FunctionName": "demo-integration-craft-report",
         "Handler": "index.report",
@@ -154,14 +154,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ReportLambdaVersionlu4S6Ezd5iV0P9zXTbYG2E5skioVaTge7ADSnEneSs": {
+    "ReportLambdaVersionWc6gXhsuKA4tpeOFyXQcFz1DBaTgt82Di2iZeD2OaqI": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ReportLambdaFunction"
         },
-        "CodeSha256": "NL89D50P49P3c2Ecpkt4WWVqjezgSAm3yxQraQnqaAs="
+        "CodeSha256": "ZZhanbxa9L+k7yZBKQv7Zc2lMpQRMR9I3JpWDfTGwpM="
       }
     },
     "DownloadLambdaFunction": {
@@ -171,7 +171,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/demo-integration/craft/1595819821466-2020-07-27T03:17:01.466Z/demo-integration.zip"
+          "S3Key": "serverless/demo-integration/craft/1595820146431-2020-07-27T03:22:26.431Z/demo-integration.zip"
         },
         "FunctionName": "demo-integration-craft-download",
         "Handler": "download.download",
@@ -205,14 +205,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "DownloadLambdaVersionzwH2TZ3Q2tjeDbu0jwafsyrzuMevVs4UKHqjujzvXXY": {
+    "DownloadLambdaVersioncCOxOmvTlm9pao3P9MtzOibGonCGpR48VYXdUKA8N5M": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "DownloadLambdaFunction"
         },
-        "CodeSha256": "NL89D50P49P3c2Ecpkt4WWVqjezgSAm3yxQraQnqaAs="
+        "CodeSha256": "ZZhanbxa9L+k7yZBKQv7Zc2lMpQRMR9I3JpWDfTGwpM="
       }
     },
     "ApiGatewayRestApi": {
@@ -330,7 +330,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1595819799228": {
+    "ApiGatewayDeployment1595820125522": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -427,13 +427,13 @@
     "ReportLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ReportLambdaVersionlu4S6Ezd5iV0P9zXTbYG2E5skioVaTge7ADSnEneSs"
+        "Ref": "ReportLambdaVersionWc6gXhsuKA4tpeOFyXQcFz1DBaTgt82Di2iZeD2OaqI"
       }
     },
     "DownloadLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "DownloadLambdaVersionzwH2TZ3Q2tjeDbu0jwafsyrzuMevVs4UKHqjujzvXXY"
+        "Ref": "DownloadLambdaVersioncCOxOmvTlm9pao3P9MtzOibGonCGpR48VYXdUKA8N5M"
       }
     },
     "ServiceEndpoint": {
