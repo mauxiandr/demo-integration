@@ -15,8 +15,6 @@
     * FACTURADOR_TOKEN
     * S3_BUCKET 
     * ACCOUNT
-- Run command
-    * node report
-    Esto generará un reporte listaDTEs.csv en la raíz del proyecto
-    * node download
-    Esto volverá a descargar los pdfs listados en el reporte generado anteriormente
+- Endpoints
+    - POST - /
+    - GET - /download
