@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const FacturadorDtes = require('./models/Facturas');
 const facturadorDtes = new FacturadorDtes();
 const FacturadorProvider = require('./lib/FacturadorProvider');
@@ -10,15 +11,11 @@ const s3Helper = new S3Helper();
  * Función que descarga el documento de cada Item obtenido en el listado
  * @param {Array} eventos 
  */
-async function download(eventos) {
-	eventos = [
-		// { idDTE: '073cfb9d-62af-43c1-bad2-f1df4d36bf4d', fechaEvento: '26/07/2020' },
-		{ idDTE: 'bdb7d19a-2302-4056-988b-daef90464c6e', fechaEvento: '26/07/2020' },
-		{ idDTE: 'de8f9d59-4b58-4ead-afc2-b0315bb4a7fa', fechaEvento: '26/07/2020' }
-	];
-	console.log('eventos', eventos);
+module.exports.download = async (event, context, callback) => {
+	context.callbackWaitsForEmtpyEventLoop = false;
 
 	try {
+		const eventos = await getItems();
 		let promises = [];
 
 		eventos.forEach(async (evento) => {
@@ -26,7 +23,6 @@ async function download(eventos) {
 				new Promise(async (resolve, reject) => {
 					let idDTE = evento.idDTE;
 					try {
-						console.log('idDTE', idDTE);
 						// consultamos el idDTE en DynamoDB
 						const { Items } = await facturadorDtes.get(idDTE);
 						//verificamos que el idDTE exista
@@ -34,11 +30,11 @@ async function download(eventos) {
 							const invoice = Items[0];
 							//verificamos que la factura se haya generado exitosamente validando el campo status == 'completed'
 							if (invoice.status == 'completed') {
-								let fileName = setName(invoice.urlPDF, invoice.idTransaccion); //seteamos el nombre con el que se va a guardar
+								let fileName = setName(invoice.urlPDF); //seteamos el nombre con el que se va a guardar
 								let buffer = await new Promise(async (resolve, reject) => {
 									let buf = 0;
 									do {
-										//descargamos nuevamente el documento desde la url almacenada en dynamo para el proveedor de facturas
+										//descargamos el documento desde la url almacenada en Dynamo para el proveedor de facturas
 										buf = await facturadorProvider.downloableAsBuffer(invoice.urlPDF_Facturador);
 										console.log('buf.length', buf.length);
 										if (buf.length > 0) resolve(buf);
@@ -70,16 +66,54 @@ async function download(eventos) {
 			);
 		});
 		await Promise.all(promises);
-		return 'fin';
+		return {
+			statusCode: 200,
+			body: JSON.stringify({
+				message: `Se ha finalizado exitosamente la descarga de archivos`
+			})
+		};
 	} catch (error) {
 		console.log('error', error);
-		return 'error';
+		return {
+			statusCode: 500,
+			body: JSON.stringify({ message: 'Ocurrió un error durante la generación del reporte' })
+		};
 	}
+};
+
+/**
+ * Función que obtiene .csv
+ */
+async function getItems() {
+	return new Promise((resolve, reject) => {
+		fs.readFile('./listadoTest.csv', 'utf8', (err, data) => {
+			if (err) throw err;
+			const listadoUsuarios = data;
+			resolve(process(listadoUsuarios));
+		});
+	});
 }
 
-function setName(nombre, idTrx) {
+/**
+ * Funcion que convierte documento csv a objeto
+ * @param {*} listado 
+ */
+function process(listado) {
+	let arr = listado.split('\n');
+	var jsonObj = [];
+	var headers = arr[0].split(',');
+	for (var i = 1; i < arr.length; i++) {
+		var data = arr[i].split(',');
+		var obj = {};
+		for (var j = 0; j < data.length; j++) {
+			obj[headers[j].trim()] = data[j].trim();
+		}
+		jsonObj.push(obj);
+	}
+	return jsonObj;
+}
+
+function setName(nombre) {
 	nombre = nombre.split('/').pop();
-	return `${idTrx}/${nombre.split('.')[0]}`;
+	return `${nombre.split('.')[0]}`;
 }
-
-download();

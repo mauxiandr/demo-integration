@@ -4,7 +4,6 @@ class FacturadorDtes extends DynamoBase {
 	constructor() {
 		super();
 		this.tableName = process.env.TABLA_FACTURAS;
-		console.log('tableName', this.tableName);
 	}
 
 	get(idDTE) {

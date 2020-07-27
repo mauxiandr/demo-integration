@@ -6,11 +6,25 @@ const sentry = require('./helpers/Sentry');
 /**
  * función de consulta los eventos de un Issue en Sentry a partir de determinada fecha.
  */
-const report = async () => {
-	let events = []; //almacena los eventos que serán guardados en el reporte
+module.exports.report = async (event, context, callback) => {
+	context.callbackWaitsForEmtpyEventLoop = false;
+
+	// obtener datos del body request
+	let body;
+	try {
+		body = JSON.parse(event['body']);
+	} catch (error) {
+		body = event['body'];
+	}
+	if (!body.date) {
+		console.log('holaa');
+		return { statusCode: 422, body: JSON.stringify({ message: 'Debe enviar el campo date' }) };
+	}
+	let eventsList = []; //almacena los eventos que serán guardados en el reporte
 	let totalEvents = 0; //para capturar eventos totales en el reporte
 	let cursor = '0:0:1'; // para saber si hay mas eventos por consultar
-	const date = moment('2020-07-26').unix(); //fecha despues de la ultima facturacion
+	const date = moment(body.date).unix(); //fecha despues de la ultima facturacion
+	console.log('date', date);
 	let filePath = `./listadoDTEs.csv`;
 
 	let logger = fs.createWriteStream(filePath, {
@@ -39,21 +53,28 @@ const report = async () => {
 					let evento = await sentry.getEventData(idEvent);
 					// se revisan los tags del evento y si corresponde se añade al reporte
 					if (filterEvent(evento.tags)) {
-						console.log('idDTE', evento.context.idDTE);
-						events.push({ idDTE: evento.context.idDTE, fechaEvento });
+						eventsList.push({ idDTE: evento.context.idDTE, fechaEvento });
 						totalEvents++;
 					}
 				}
 			}
 		} while (cursor != false); //mientras haya más resultados
 
-		events.forEach((evento) => {
+		eventsList.forEach((evento) => {
 			logger.write(`${evento.idDTE},${moment.unix(evento.fechaEvento).format('DD/MM/YYYY')}\n`);
 		});
-		return `Se ha finalizado exitosamente la generación del reporte de eventos del Issue con un total de ${totalEvents}`;
+		return {
+			statusCode: 200,
+			body: JSON.stringify({
+				message: `Se ha finalizado exitosamente la generación del reporte de eventos del Issue con un total de ${totalEvents}`
+			})
+		};
 	} catch (error) {
-		console.log('ups', error);
-		return 'Ocurrió un error durante la generación del reporte';
+		console.log('ups');
+		return {
+			statusCode: 500,
+			body: JSON.stringify({ message: 'Ocurrió un error durante la generación del reporte' })
+		};
 	}
 };
 
@@ -93,5 +114,3 @@ function filterEvent(tags) {
 		return false;
 	}
 }
-
-report();

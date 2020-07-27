@@ -1,0 +1,40 @@
+service: demo-integration
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: ${opt:stage, 'local'}
+  timeout: 30 # segundos
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Query"
+      Resource:
+        - arn:aws:dynamodb:us-west-2:${env:ACCOUNT}:table/${env:TABLA_FACTURAS}
+  environment:
+    STAGE: ${self:provider.stage}
+
+custom:
+  dotenv:
+    path: ./.env
+    basePath: ./
+    logging: false
+
+functions:
+  report:
+    handler: index.report
+    events:
+      - http:
+          path: /
+          method: post
+  download:
+    handler: download.download
+    events:
+      - http:
+          path: /download
+          method: get

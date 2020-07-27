@@ -1,0 +1,36 @@
+language: node_js
+node_js:
+  - 12
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - echo "INSTALL GLOBAL DEPENDENCIES"
+  - npm install -g serverless
+  - echo "BEFORE INSTALL - ADD PRIVATE REPO"
+  - npm config set registry https://npm.pkg.github.com/pstpagofacil
+  - echo "GENERATING AUTH"
+  - echo //npm.pkg.github.com/:_authToken=$GITHUB_TOKEN > .npmrc
+
+install:
+  - echo "INSTALL"
+  - npm install
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - echo 'Probando el Código'
+        - npm test
+    - stage: deploy
+      script:
+        - sls deploy --stage craft
+stages:
+  #Cualquier push genera que se ejecuten las pruebas por el momento.
+  - name: test
+    if: type = pull_request
+  #Se hace deploy si el push es a master
+  - name: deploy
+    if: type = push AND branch = master
