@@ -16,6 +16,11 @@ provider:
         - "dynamodb:Query"
       Resource:
         - arn:aws:dynamodb:us-west-2:${env:ACCOUNT}:table/${env:TABLA_FACTURAS}
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - arn:aws:s3:::${file(./config/config.${env:S3_BUCKET}/*
   environment:
     STAGE: ${self:provider.stage}
 
@@ -23,7 +28,6 @@ custom:
   dotenv:
     path: ./.env
     basePath: ./
-    logging: false
 
 functions:
   report:
