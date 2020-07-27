@@ -22,7 +22,7 @@ module.exports.report = async (event, context, callback) => {
 	let eventsList = []; //almacena los eventos que serán guardados en el reporte
 	let totalEvents = 0; //para capturar eventos totales en el reporte
 	let cursor = '0:0:1'; // para saber si hay mas eventos por consultar
-	const date = moment(body.date).unix(); //fecha despues de la ultima facturacion
+	const date = moment(body.date).unix();
 
 	let logger = fs.createWriteStream(`/tmp/listadoDTEs.csv`, {
 		flags: 'w'
@@ -34,31 +34,47 @@ module.exports.report = async (event, context, callback) => {
 			//se obtienen los eventos del Issue
 			let response = await sentry.getEventsFromIssue(process.env.ISSUE_ID, cursor);
 			const eventos = response.data;
+
 			const size = Object.keys(eventos).length;
 			console.log('Cantidad de eventos', size);
 			cursor = checkIfHasMore(response.headers.link); //se verifica si hay mas resultados y el cursor para proxima consulta
 			console.log('cursor', cursor);
 
 			// se obtienen los datos de cada evento'
-			for (const key in eventos) {
-				const fechaEvento = moment(eventos[key].dateCreated).unix(); //se obtiene la fecha del evento
-				// si es posterior a nuestra fecha de inicio
-				if (fechaEvento >= date) {
-					let idEvent = eventos[key].eventID;
-					console.log(`evaluando evento #${parseInt(key) + 1} de ${size}`);
-					//se obtiene información del evento
-					let evento = await sentry.getEventData(idEvent);
-					// se revisan los tags del evento y si corresponde se añade al reporte
-					if (filterEvent(evento.tags)) {
-						eventsList.push({ idDTE: evento.context.idDTE, fechaEvento });
-						totalEvents++;
-					}
-				}
+			let promises = [];
+			//se filtran los eventos a partir de la fecha dada
+			const filterEvents = eventos.filter((evento) => moment(evento.dateCreated).unix() >= date);
+			for (const key in filterEvents) {
+				let idEvent = filterEvents[key].eventID;
+				console.log(
+					`evaluando evento ${idEvent} - #${parseInt(key) + 1} de ${Object.keys(filterEvents).length}`
+				);
+				//se obtiene información del evento
+				promises.push(
+					new Promise(async (resolve, reject) => {
+						try {
+							let evento = await sentry.getEventData(idEvent);
+							// se revisan los tags del evento y si corresponde se añade al reporte
+							if (filterEventByTags(evento.tags)) {
+								eventsList.push({
+									idDTE: evento.context.idDTE,
+									date: moment(evento.dateCreated).format('YYYY-MM-DD')
+								});
+								totalEvents++;
+							}
+							resolve(true);
+						} catch (error) {
+							resolve(false);
+						}
+					})
+				);
 			}
+			await Promise.all(promises);
 		} while (cursor != false); //mientras haya más resultados
 
+		console.log('llegue aqui, voy a escribir el documento');
 		eventsList.forEach((evento) => {
-			logger.write(`${evento.idDTE},${moment.unix(evento.fechaEvento).format('DD/MM/YYYY')}\n`);
+			logger.write(`${evento.idDTE},${evento.date}\n`);
 		});
 		return {
 			statusCode: 200,
@@ -97,7 +113,7 @@ const parseCookie = (str) =>
  * Función que busca en los tags del evento si es del stage deseado
  * @param {Array} tags 
  */
-function filterEvent(tags) {
+function filterEventByTags(tags) {
 	try {
 		for (const tag in tags) {
 			// se busca el tag del stage

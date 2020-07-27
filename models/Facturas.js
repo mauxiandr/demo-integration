@@ -1,6 +1,6 @@
 const DynamoBase = require('./DynamoBase');
 
-class FacturadorDtes extends DynamoBase {
+class Facturas extends DynamoBase {
 	constructor() {
 		super();
 		this.tableName = process.env.TABLA_FACTURAS;
@@ -39,4 +39,4 @@ class FacturadorDtes extends DynamoBase {
 	}
 }
 
-module.exports = FacturadorDtes;
+module.exports = Facturas;
