@@ -24,7 +24,7 @@ module.exports.report = async (event, context, callback) => {
 	let cursor = '0:0:1'; // para saber si hay mas eventos por consultar
 	const date = moment(body.date).unix();
 
-	let logger = fs.createWriteStream(`/tmp/listadoDTEs.csv`, {
+	let logger = fs.createWriteStream(`./tmp/listadoDTEs.csv`, {
 		flags: 'w'
 	});
 	logger.write('idDTE,dateEvent\n');
@@ -72,7 +72,6 @@ module.exports.report = async (event, context, callback) => {
 			await Promise.all(promises);
 		} while (cursor != false); //mientras haya más resultados
 
-		console.log('llegue aqui, voy a escribir el documento');
 		eventsList.forEach((evento) => {
 			logger.write(`${evento.idDTE},${evento.date}\n`);
 		});
