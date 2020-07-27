@@ -24,7 +24,7 @@ module.exports.report = async (event, context, callback) => {
 	let cursor = '0:0:1'; // para saber si hay mas eventos por consultar
 	const date = moment(body.date).unix(); //fecha despues de la ultima facturacion
 
-	let logger = fs.createWriteStream(`./listadoDTEs.csv`, {
+	let logger = fs.createWriteStream(`/listadoDTEs.csv`, {
 		flags: 'w'
 	});
 	logger.write('idDTE,dateEvent\n');
