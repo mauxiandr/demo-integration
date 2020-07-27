@@ -10,7 +10,7 @@ before_install:
   - echo "INSTALL GLOBAL DEPENDENCIES"
   - npm install -g serverless
   - echo "BEFORE INSTALL - ADD PRIVATE REPO"
-  - npm config set registry https://npm.pkg.github.com/pstpagofacil
+  - npm config set registry https://npm.pkg.github.com/mauxiandr
   - echo "GENERATING AUTH"
   - echo //npm.pkg.github.com/:_authToken=$GITHUB_TOKEN > .npmrc
 

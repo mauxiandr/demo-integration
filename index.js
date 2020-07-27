@@ -17,17 +17,14 @@ module.exports.report = async (event, context, callback) => {
 		body = event['body'];
 	}
 	if (!body.date) {
-		console.log('holaa');
 		return { statusCode: 422, body: JSON.stringify({ message: 'Debe enviar el campo date' }) };
 	}
 	let eventsList = []; //almacena los eventos que serán guardados en el reporte
 	let totalEvents = 0; //para capturar eventos totales en el reporte
 	let cursor = '0:0:1'; // para saber si hay mas eventos por consultar
 	const date = moment(body.date).unix(); //fecha despues de la ultima facturacion
-	console.log('date', date);
-	let filePath = `./listadoDTEs.csv`;
 
-	let logger = fs.createWriteStream(filePath, {
+	let logger = fs.createWriteStream(`./listadoDTEs.csv`, {
 		flags: 'w'
 	});
 	logger.write('idDTE,dateEvent\n');
@@ -46,7 +43,7 @@ module.exports.report = async (event, context, callback) => {
 			for (const key in eventos) {
 				const fechaEvento = moment(eventos[key].dateCreated).unix(); //se obtiene la fecha del evento
 				// si es posterior a nuestra fecha de inicio
-				if (fechaEvento > date) {
+				if (fechaEvento >= date) {
 					let idEvent = eventos[key].eventID;
 					console.log(`evaluando evento #${parseInt(key) + 1} de ${size}`);
 					//se obtiene información del evento
