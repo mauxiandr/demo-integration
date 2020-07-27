@@ -1,0 +1,584 @@
+{
+  "service": {
+    "service": "demo-integration",
+    "serviceObject": {
+      "name": "demo-integration"
+    },
+    "provider": {
+      "stage": "craft",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*]+?)}",
+      "name": "aws",
+      "runtime": "nodejs10.x",
+      "timeout": 30,
+      "region": "us-west-2",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:Query"
+          ],
+          "Resource": [
+            "arn:aws:dynamodb:us-west-2:607613765343:table/facturador_dte_craft"
+          ]
+        }
+      ],
+      "environment": {
+        "STAGE": "craft",
+        "ISSUE_ID": "1675787926",
+        "SENTRY_TOKEN": "43c1e11d908d474b91a56aab5a1e7ba685f290ee5f4442e380d44252f03461f8",
+        "ORGANIZATION_SLUG": "pago-facil-spa",
+        "PROJECT_SLUG": "lambda-billings",
+        "STAGE_TAG": "environment",
+        "TABLA_FACTURAS": "facturador_dte_craft",
+        "REGION": "us-west-2",
+        "FACTURADOR_TOKEN": "0c2bf743d6e9477ed0a9371dd1cc2f7bdfe4a0f3",
+        "S3_BUCKET": "test260720",
+        "ACCOUNT": "607613765343"
+      },
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ReportLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/demo-integration-craft-report"
+            }
+          },
+          "DownloadLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/demo-integration-craft-download"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "craft",
+                        "demo-integration",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/demo-integration-craft*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/demo-integration-craft*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "demo-integration",
+                    "craft",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "ReportLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/demo-integration/craft/1595819821466-2020-07-27T03:17:01.466Z/demo-integration.zip"
+              },
+              "FunctionName": "demo-integration-craft-report",
+              "Handler": "index.report",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs10.x",
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "STAGE": "craft",
+                  "ISSUE_ID": "1675787926",
+                  "SENTRY_TOKEN": "43c1e11d908d474b91a56aab5a1e7ba685f290ee5f4442e380d44252f03461f8",
+                  "ORGANIZATION_SLUG": "pago-facil-spa",
+                  "PROJECT_SLUG": "lambda-billings",
+                  "STAGE_TAG": "environment",
+                  "TABLA_FACTURAS": "facturador_dte_craft",
+                  "REGION": "us-west-2",
+                  "FACTURADOR_TOKEN": "0c2bf743d6e9477ed0a9371dd1cc2f7bdfe4a0f3",
+                  "S3_BUCKET": "test260720",
+                  "ACCOUNT": "607613765343"
+                }
+              }
+            },
+            "DependsOn": [
+              "ReportLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "ReportLambdaVersionlu4S6Ezd5iV0P9zXTbYG2E5skioVaTge7ADSnEneSs": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ReportLambdaFunction"
+              },
+              "CodeSha256": "NL89D50P49P3c2Ecpkt4WWVqjezgSAm3yxQraQnqaAs="
+            }
+          },
+          "DownloadLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/demo-integration/craft/1595819821466-2020-07-27T03:17:01.466Z/demo-integration.zip"
+              },
+              "FunctionName": "demo-integration-craft-download",
+              "Handler": "download.download",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs10.x",
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "STAGE": "craft",
+                  "ISSUE_ID": "1675787926",
+                  "SENTRY_TOKEN": "43c1e11d908d474b91a56aab5a1e7ba685f290ee5f4442e380d44252f03461f8",
+                  "ORGANIZATION_SLUG": "pago-facil-spa",
+                  "PROJECT_SLUG": "lambda-billings",
+                  "STAGE_TAG": "environment",
+                  "TABLA_FACTURAS": "facturador_dte_craft",
+                  "REGION": "us-west-2",
+                  "FACTURADOR_TOKEN": "0c2bf743d6e9477ed0a9371dd1cc2f7bdfe4a0f3",
+                  "S3_BUCKET": "test260720",
+                  "ACCOUNT": "607613765343"
+                }
+              }
+            },
+            "DependsOn": [
+              "DownloadLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "DownloadLambdaVersionzwH2TZ3Q2tjeDbu0jwafsyrzuMevVs4UKHqjujzvXXY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DownloadLambdaFunction"
+              },
+              "CodeSha256": "NL89D50P49P3c2Ecpkt4WWVqjezgSAm3yxQraQnqaAs="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "craft-demo-integration",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              }
+            }
+          },
+          "ApiGatewayResourceDownload": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "download",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "ReportLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodDownloadGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceDownload"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DownloadLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1595819799228": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "craft"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodPost",
+              "ApiGatewayMethodDownloadGet"
+            ]
+          },
+          "ReportLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ReportLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DownloadLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DownloadLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "ReportLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ReportLambdaVersionlu4S6Ezd5iV0P9zXTbYG2E5skioVaTge7ADSnEneSs"
+            }
+          },
+          "DownloadLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DownloadLambdaVersionzwH2TZ3Q2tjeDbu0jwafsyrzuMevVs4UKHqjujzvXXY"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/craft"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "dotenv": {
+        "path": "./.env",
+        "basePath": "./",
+        "logging": false
+      }
+    },
+    "plugins": [
+      "serverless-offline",
+      "serverless-dotenv-plugin"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "report": {
+        "handler": "index.report",
+        "events": [
+          {
+            "http": {
+              "path": "",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "demo-integration-craft-report",
+        "package": {},
+        "memory": 1024,
+        "timeout": 30,
+        "runtime": "nodejs10.x",
+        "vpc": {}
+      },
+      "download": {
+        "handler": "download.download",
+        "events": [
+          {
+            "http": {
+              "path": "download",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "demo-integration-craft-download",
+        "package": {},
+        "memory": 1024,
+        "timeout": 30,
+        "runtime": "nodejs10.x",
+        "vpc": {}
+      }
+    },
+    "serviceFilename": "serverless.yml",
+    "layers": {},
+    "artifact": "/home/mauxi/Documentos/demo-integration/.serverless/demo-integration.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/demo-integration/craft/1595819821466-2020-07-27T03:17:01.466Z",
+    "artifact": "demo-integration.zip"
+  }
+}

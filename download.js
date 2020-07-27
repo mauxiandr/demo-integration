@@ -86,7 +86,7 @@ module.exports.download = async (event, context, callback) => {
  */
 async function getItems() {
 	return new Promise((resolve, reject) => {
-		fs.readFile('/listadoTest.csv', 'utf8', (err, data) => {
+		fs.readFile('/temp/listadoTest.csv', 'utf8', (err, data) => {
 			if (err) throw err;
 			const listadoUsuarios = data;
 			resolve(process(listadoUsuarios));
