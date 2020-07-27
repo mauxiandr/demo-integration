@@ -20,6 +20,15 @@
           "Resource": [
             "arn:aws:dynamodb:us-west-2:607613765343:table/facturador_dte_craft"
           ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:*"
+          ],
+          "Resource": [
+            "arn:aws:s3:::${file(./config/config.test260720/*"
+          ]
         }
       ],
       "environment": {
@@ -125,6 +134,9 @@
                       },
                       {
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
                       }
                     ]
                   }
@@ -153,7 +165,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/demo-integration/craft/1595821006421-2020-07-27T03:36:46.421Z/demo-integration.zip"
+                "S3Key": "serverless/demo-integration/craft/1595821631340-2020-07-27T03:47:11.340Z/demo-integration.zip"
               },
               "FunctionName": "demo-integration-craft-report",
               "Handler": "index.report",
@@ -204,7 +216,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/demo-integration/craft/1595821006421-2020-07-27T03:36:46.421Z/demo-integration.zip"
+                "S3Key": "serverless/demo-integration/craft/1595821631340-2020-07-27T03:47:11.340Z/demo-integration.zip"
               },
               "FunctionName": "demo-integration-craft-download",
               "Handler": "download.download",
@@ -363,7 +375,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1595820986846": {
+          "ApiGatewayDeployment1595821607006": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -526,8 +538,7 @@
     "custom": {
       "dotenv": {
         "path": "./.env",
-        "basePath": "./",
-        "logging": false
+        "basePath": "./"
       }
     },
     "plugins": [
@@ -578,7 +589,7 @@
     "artifact": "/home/mauxi/Documentos/demo-integration/.serverless/demo-integration.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/demo-integration/craft/1595821006421-2020-07-27T03:36:46.421Z",
+    "artifactDirectoryName": "serverless/demo-integration/craft/1595821631340-2020-07-27T03:47:11.340Z",
     "artifact": "demo-integration.zip"
   }
 }

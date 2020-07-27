@@ -20,7 +20,7 @@ provider:
       Action:
         - "s3:*"
       Resource:
-        - arn:aws:s3:::${file(./config/config.${env:S3_BUCKET}/*
+        - arn:aws:s3:::${env:S3_BUCKET}/*
   environment:
     STAGE: ${self:provider.stage}
 
