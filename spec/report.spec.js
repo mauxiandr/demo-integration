@@ -3,8 +3,7 @@ const sinon = require('sinon');
 const handler = require('../index.js');
 const sentry = require('./../helpers/Sentry');
 const mock = require('mock-fs');
-var fs = require('fs');
-const { prototype } = require('stream');
+
 const event = {
 	body: {
 		date: '2020-07-26'
