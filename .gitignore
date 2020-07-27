@@ -2,7 +2,9 @@ node_modules
 
 tmp/listadoDTEs.csv
 .env
+# Serverless directories
 .serverless
-.serverless
+.serverless/*
+
 .nyc_output
 coverage/
